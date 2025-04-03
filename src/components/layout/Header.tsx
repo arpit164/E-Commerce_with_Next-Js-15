@@ -53,7 +53,7 @@ const Header = ({ user }: HeaderProps) => {
             <div className={`w-full transform transition-transform duration-300 ease-in-out text-black ${isOpen ? 'translate-y-0' : '-translate-y-full'}`}>
                 <AnnouncementBar />
 
-                <div className='w-full flex justify-between items-center py-3 sm:py-4 bg-white/80 shadow-sm border-b border-gray-100 backdrop-blur-sm'>
+                <div className='w-full flex justify-between items-center py-3 sm:py-4 bg-white/70 shadow-sm border-b border-gray-100 backdrop-blur-sm'>
                     <div className='flex justify-between items-center container mx-auto px-8'>
                         <div className='flex flex-1 justify-start items-center gap-4 sm:gap-6'>
                             <button className='text-gray-700 hover:text-gray-900 md:hidden'>
