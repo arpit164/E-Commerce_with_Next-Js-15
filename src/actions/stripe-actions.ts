@@ -19,15 +19,9 @@ export const createCheckoutSession = async (cartId: string, width: number) => {
     const totalPrice = cart.items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
     console.log(cart.items.map((item) => item.title))
-
-<<<<<<< HEAD
     
     const baseUrl = width <= 400 ? process.env.NEXT_PUBLIC_PHONE_BASE_URL : process.env.NEXT_PUBLIC_PC_BASE_URL ;
     
-=======
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
->>>>>>> 836e50220c5c8ce17849176985d60345067028e8
     if (!baseUrl) throw new Error('Missing NEXT_PUBLIC_BASE_URL in env');
 
     const session = await stripe.checkout.sessions.create({

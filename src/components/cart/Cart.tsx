@@ -76,7 +76,7 @@ const CartItem = ({item}: {item: CartItemType}) => {
 }
 
 const Cart = () => {
-    const { cartId, removeItem, updateQuantity, items, close, isOpen, syncWithUser, setLoaded, getTotalPrice, getTotalItems } = useCartStore(
+    const { cartId, items, close, isOpen, syncWithUser, setLoaded, getTotalPrice, getTotalItems } = useCartStore(
         useShallow((state) => ({
             cartId: state.cartId,
             removeItem: state.removeItem,
@@ -108,7 +108,8 @@ const Cart = () => {
         }
         setLoadingProceed(true);
 
-        const checkoutUrl = await createCheckoutSession(cartId);
+        const checkoutUrl = await createCheckoutSession(cartId, window.innerWidth);
+
 
         try {
             const anyWindow = window as any;
@@ -120,7 +121,7 @@ const Cart = () => {
                     currency: 'USD',
                 })
             }
-        } catch(e) {}
+        } catch(e) { console.log(e) }
 
         window.location.href = checkoutUrl;
         
