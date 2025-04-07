@@ -5,7 +5,7 @@ import { getOrCreateCart } from '@/actions/cart-actions';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia'
+    apiVersion: '2025-03-31.basil'
 });
 
 export const createCheckoutSession = async (cartId: string) => {
@@ -20,6 +20,10 @@ export const createCheckoutSession = async (cartId: string) => {
 
     console.log(cart.items.map((item) => item.title))
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+    if (!baseUrl) throw new Error('Missing NEXT_PUBLIC_BASE_URL in env');
+
     const session = await stripe.checkout.sessions.create({
         mode: 'payment',
         line_items: cart.items.map((item) => ({
@@ -33,8 +37,9 @@ export const createCheckoutSession = async (cartId: string) => {
             },
             quantity: item.quantity,
         })),
-        success_url: `${process.env.NEXT_PUBLIC_BASE_URL!}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL!}`,
+        success_url: `${baseUrl}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${baseUrl}/`,
+
         customer_email: user?.email,
         metadata: {
             cartId: cart.id,

@@ -2,10 +2,10 @@
 
 import { getCurrentSession } from "@/actions/auth";
 import prisma from "@/lib/prisma";
-import { Product } from "@/sanity.types";
+import { Product } from "../../sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+// import { cookies } from "next/headers";
 
 export const createCart = async () => {
     const { user } = await getCurrentSession();
@@ -14,13 +14,9 @@ export const createCart = async () => {
         data: {
             id: crypto.randomUUID(),
             user: user ? { connect: { id: user.id } } : undefined,
-            items: {
-                create: [],
-            }
+            items: { create: [], }
         },
-        include: {
-            items: true,
-        }
+        include: { items: true, }
     });
 
     return cart;
@@ -31,12 +27,8 @@ export const getOrCreateCart = async (cartId?: string | null) => {
 
     if(user) {
         const userCart = await prisma.cart.findUnique({
-            where: {
-                userId: user.id,
-            },
-            include: {
-                items: true,
-            }
+            where: { userId: user.id, },
+            include: { items: true, }
         });
 
         if(userCart) {
@@ -49,17 +41,11 @@ export const getOrCreateCart = async (cartId?: string | null) => {
     }
 
     const cart = await prisma.cart.findUnique({
-        where: {
-            id: cartId
-        },
-        include: {
-            items: true,
-        }
+        where: { id: cartId },
+        include: { items: true, }
     });
 
-    if(!cart) {
-        return createCart();
-    }
+    if(!cart) { return createCart(); }
 
     return cart;
 }
@@ -84,18 +70,12 @@ export const updateCartItem = async (
         // Update quantity
         if(data.quantity === 0) {
             await prisma.cartLineItem.delete({
-                where: {
-                    id: existingItem.id
-                }
+                where: { id: existingItem.id }
             })
         } else if(data.quantity && data.quantity > 0) {
             await prisma.cartLineItem.update({
-                where: {
-                    id: existingItem.id
-                },
-                data: {
-                    quantity: data.quantity
-                }
+                where: { id: existingItem.id },
+                data: { quantity: data.quantity  }
             })
         }
     } else if(data.quantity && data.quantity > 0) {
@@ -119,26 +99,16 @@ export const updateCartItem = async (
 export const syncCartWithUser = async (cartId: string | null) => {
     const { user } = await getCurrentSession();
 
-    if(!user) {
-        return null;
-    }
+    if(!user) { return null; }
 
     const existingUserCart = await prisma.cart.findUnique({
-        where: {
-            userId: user.id
-        },
-        include: {
-            items: true,
-        }
+        where: { userId: user.id },
+        include: { items: true, }
     });
 
     const existingAnonymousCart = cartId ? await prisma.cart.findUnique({
-        where: {
-            id: cartId,
-        },
-        include: {
-            items: true,
-        }
+        where: { id: cartId, },
+        include: { items: true, }
     }) : null;
 
     if(!cartId && existingUserCart) {
@@ -160,19 +130,15 @@ export const syncCartWithUser = async (cartId: string | null) => {
 
     if(!existingUserCart) {
         const newCart = await prisma.cart.update({
-            where: {
-                id: cartId
-            },
+            where: { id: cartId },
             data: {
                 user: {
-                    connect: {
-                        id: user.id
+                    connect: { 
+                        id: user.id 
                     }
                 }
             },
-            include: {
-                items: true,
-            }
+            include: { items: true, }
         });
         return newCart;
     }
@@ -187,12 +153,8 @@ export const syncCartWithUser = async (cartId: string | null) => {
         if(existingItem) {
             // add two cart quantities together
             await prisma.cartLineItem.update({
-                where: {
-                    id: existingItem.id
-                },
-                data: {
-                    quantity: existingItem.quantity + item.quantity
-                }
+                where: { id: existingItem.id },
+                data: { quantity: existingItem.quantity + item.quantity }
             })
         } else {
             // add non-existing item to the user's cart
@@ -210,11 +172,7 @@ export const syncCartWithUser = async (cartId: string | null) => {
         }
     }
 
-    await prisma.cart.delete({
-        where: {
-            id: cartId
-        }
-    });
+    await prisma.cart.delete({ where: { id: cartId } });
 
     revalidatePath("/");
     return getOrCreateCart(existingUserCart.id);
