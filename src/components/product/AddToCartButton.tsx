@@ -50,7 +50,7 @@ const AddToCartButton = ({ product }: AddToCartButtonProps) => {
                     currency: 'USD',
                 })
             }
-        } catch(e) {}
+        } catch(e) { console.log(e) }
 
         setLoading(false);
         open();
